@@ -7,12 +7,16 @@ from src.api.models import User
 users_blueprint = Blueprint("users", __name__)
 api = Api(users_blueprint)
 
-user = api.model("User", {
-    "id": fields.Integer(readOnly=True),
-    "username": fields.String(required=True),
-    "email": fields.String(required=True),
-    "created_date": fields.DateTime,
-    })
+user = api.model(
+    "User",
+    {
+        "id": fields.Integer(readOnly=True),
+        "username": fields.String(required=True),
+        "email": fields.String(required=True),
+        "created_date": fields.DateTime,
+    },
+)
+
 
 class UsersList(Resource):
     @api.expect(user, validate=True)
@@ -30,13 +34,13 @@ class UsersList(Resource):
         db.session.add(User(username=username, email=email))
         db.session.commit()
 
-        response_object = {
-            "message": f"{email} was added!"
-                }
+        response_object = {"message": f"{email} was added!"}
         return response_object, 201
+
     @api.marshal_with(user, as_list=True)
     def get(self):
         return User.query.all(), 200
+
 
 class Users(Resource):
     @api.marshal_with(user)
@@ -45,6 +49,7 @@ class Users(Resource):
         if not user:
             api.abort(404, f"User {user_id} does not exist")
         return user, 200
+
 
 api.add_resource(UsersList, "/users")
 api.add_resource(Users, "/users/<int:user_id>")

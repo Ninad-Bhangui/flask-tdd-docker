@@ -1,5 +1,5 @@
-import pytest 
-from src import create_app,db 
+import pytest
+from src import create_app, db
 from src.api.models import User
 
 
@@ -8,7 +8,8 @@ def test_app():
     app = create_app()
     app.config.from_object("src.config.TestingConfig")
     with app.app_context():
-        yield app # Testing happens here
+        yield app  # Testing happens here
+
 
 @pytest.fixture(scope="module")
 def test_database():
@@ -17,6 +18,7 @@ def test_database():
     db.session.remove()
     db.drop_all()
 
+
 @pytest.fixture(scope="function")
 def add_user():
     def _add_user(username, email):
@@ -24,4 +26,5 @@ def add_user():
         db.session.add(user)
         db.session.commit()
         return user
+
     return _add_user
