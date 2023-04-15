@@ -1,4 +1,5 @@
 import pytest
+
 from src import create_app, db
 from src.api.models import User
 
