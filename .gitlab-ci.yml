@@ -46,7 +46,7 @@ deploy:
     - docker:dind
   script:
     - echo "Deploy to production render"
-    - curl -s "https://api.render.com/deploy/srv-${DEPLOY_HOOK_01}?key=${DEPLOY_HOOK_02}" -o file.txt > /dev/null 2>&1
+    - curl -s "https://api.render.com/deploy/srv-${DEPLOY_HOOK_01}?key=${DEPLOY_HOOK_02}"
   environment:
     name: production
     url: https://dashboard.render.com/web/srv-${DEPLOY_HOOK_01}
