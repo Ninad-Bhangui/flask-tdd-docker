@@ -55,7 +55,7 @@ def test_single_user(test_app, test_database, add_user):
 
 def test_single_user_incorrect_id(test_app, test_database):
     client = test_app.test_client()
-    resp = client.get(f"/users/999")
+    resp = client.get("/users/999")
     data = json.loads(resp.data.decode())
     assert resp.status_code == 404
     assert "User 999 does not exist" in data["message"]
