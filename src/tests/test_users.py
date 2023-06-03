@@ -87,12 +87,12 @@ def test_remove_user(test_app, test_database, add_user):
     assert resp.status_code == 200
     assert "deluser was removed" in data["message"]
 
-    test_database.session.remove()  #To make sure the test fails if session commit is forgotten in code
+    test_database.session.remove()  # To make sure the test fails if session commit is forgotten in code
     del_user = User.query.filter_by(id=user.id).first()
     assert del_user is None
 
     resp_two = client.get(f"/users/{user.id}")
-    assert  resp_two.status_code == 404
+    assert resp_two.status_code == 404
 
 
 def test_remove_invalid_user(test_app, test_database, add_user):
