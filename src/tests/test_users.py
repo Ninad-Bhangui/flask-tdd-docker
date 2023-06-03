@@ -86,9 +86,13 @@ def test_remove_user(test_app, test_database, add_user):
     data = json.loads(resp.data.decode())
     assert resp.status_code == 200
     assert "deluser was removed" in data["message"]
-    del_user = User.query.filter_by(id=user.id)
-    del_user = test_database.session.query(User).filter_by(id=user.id).first()
+
+    test_database.session.remove()  #To make sure the test fails if session commit is forgotten in code
+    del_user = User.query.filter_by(id=user.id).first()
     assert del_user is None
+
+    resp_two = client.get(f"/users/{user.id}")
+    assert  resp_two.status_code == 404
 
 
 def test_remove_invalid_user(test_app, test_database, add_user):
@@ -101,6 +105,7 @@ def test_remove_invalid_user(test_app, test_database, add_user):
 
 
 def test_update_user(test_app, test_database, add_user):
+    test_database.session.query(User).delete()
     user = add_user("updateuser", "updateuser@seven.org")
     client = test_app.test_client()
     resp = client.put(
@@ -142,6 +147,7 @@ def test_update_user_invalid(
 
 
 def test_update_duplicate_email(test_app, test_database, add_user):
+    test_database.session.query(User).delete()
     add_user("johndoe", "johndoe@seven.org")
     user = add_user("updateuser", "update@seven.org")
     client = test_app.test_client()

@@ -56,6 +56,7 @@ class Users(Resource):
         if not user:
             api.abort(404, f"User {user_id} does not exist")
         db.session.delete(user)
+        db.session.commit()
         response_object["message"] = f"{user.username} was removed"
         return response_object, 200
 
