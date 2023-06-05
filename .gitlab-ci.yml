@@ -34,6 +34,7 @@ test:
     POSTGRES_PASSWORD: runner
     DATABASE_URL: postgresql://runner:runner@postgres:5432/users
     DATABASE_TEST_URL: postgresql://runner:runner@postgres:5432/users
+    FLASK_ENV: development
   script:
     - python3.11 -m venv env
     - source env/bin/activate

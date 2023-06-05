@@ -1,7 +1,7 @@
 from flask import Blueprint, request
 from flask_restx import Api, Resource, fields
 
-from src.api.crud import (  # isort:skip
+from src.api.users.crud import (  # isort:skip
     add_user,
     delete_user,
     get_all_users,
