@@ -1,12 +1,12 @@
 from flask import Blueprint, request
 from flask_restx import Api, Resource, fields
 
-from src.api.crud import (
-    get_user_by_email,
+from src.api.crud import (  # isort:skip
     add_user,
-    get_all_users,
-    get_user_by_id,
     delete_user,
+    get_all_users,
+    get_user_by_email,
+    get_user_by_id,
     update_user,
 )
 
