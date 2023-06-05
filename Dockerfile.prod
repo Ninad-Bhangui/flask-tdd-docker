@@ -1,6 +1,42 @@
-FROM python:3.11.2-slim-buster
+###########
+# Builder #
+###########
+
+# pull official base image
+FROM python:3.11.2-slim-buster as builder
 
 # set working directory
+WORKDIR /usr/src/app
+
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# install system dependancies
+RUN apt-get update \
+    && apt-get -y install netcat gcc postgresql \
+    && apt-get clean
+
+# install dependancies
+RUN pip install --upgrade pip
+COPY ./requirements.txt .
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
+
+# lint
+COPY . .
+RUN pip install black==23.1.0 flake8==6.0.0 isort==5.12.0
+RUN flake8 src
+RUN black src --check
+RUN isort src --check-only
+
+#########
+# Final #
+#########
+
+# pull official base image
+FROM python:3.11.2-slim-buster
+
+# set work directory
 WORKDIR /usr/src/app
 
 # set environment variables
@@ -10,20 +46,19 @@ ENV FLASK_DEBUG 0
 ENV FLASK_ENV production
 ENV APP_SETTINGS src.config.ProductionConfig
 
+# install system dependancies
 RUN apt-get update \
     && apt-get -y install netcat gcc postgresql \
     && apt-get clean
 
-# add and install requirements
-COPY ./requirements.txt .
-RUN pip install -r requirements.txt
+# install dependancies
+COPY --from=builder /usr/src/app/wheels /wheels
+COPY --from=builder /usr/src/app/requirements.txt .
+RUN pip install --upgrade pip
+RUN pip install --no-cache /wheels/*
 
 # add app
 COPY . .
-
-# add and run as non-root user
-RUN adduser --disabled-password myuser
-USER myuser
 
 # run gunicorn
 CMD gunicorn --bind 0.0.0.0:$PORT manage:app
